@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using eCommerceAPI.Data;
 using eCommerceAPI.DTOs;
@@ -94,6 +95,17 @@ namespace eCommerceAPI.Controllers
 
     }
 
+    [Authorize]
+    [HttpGet("savedAddress")]
+    public async Task<ActionResult<UserAddress>> GetSavedAddress() 
+    {
+        return await _userManager.Users
+            .Where(x => x.UserName ==  User.Identity.Name)
+            .Select(user => user.Address)
+            .FirstOrDefaultAsync();
+    }
+
+
     private async Task<Basket> RetrieveBasket(string buyerId)
     {
         if (string.IsNullOrEmpty(buyerId))
@@ -104,7 +116,7 @@ namespace eCommerceAPI.Controllers
         return await _context.Baskets
                     .Include(i => i.Items)
                     .ThenInclude(p => p.Product)
-                    .FirstOrDefaultAsync(x => x.BuyerId == Request.Cookies["buyerId"]);
+                    .FirstOrDefaultAsync(x => x.BuyerId == buyerId);
     }
 
 

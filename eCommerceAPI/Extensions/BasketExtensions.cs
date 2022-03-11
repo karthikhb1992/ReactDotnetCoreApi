@@ -1,6 +1,7 @@
 using System.Linq;
 using eCommerceAPI.DTOs;
 using eCommerceAPI.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace eCommerceAPI.Extensions
 {
@@ -23,6 +24,11 @@ namespace eCommerceAPI.Extensions
                     Quantity = item.Quantity
                 }).ToList()
             };
+        }
+
+        public static IQueryable<Basket> RetrieveBasketWithItems(this IQueryable<Basket> query,string buyerId) 
+        {
+            return query.Include(i=> i.Items).ThenInclude(p=> p.Product).Where(b => b.BuyerId == buyerId);
         }
     }
 }
